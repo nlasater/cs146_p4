@@ -1,6 +1,6 @@
 #set all variables to be checked against
 blitz_min_planets = 3
-agressive_fleet_min = 40
+agressive_fleet_min = 100
 planet_in_trouble_at = 50
 max_allowable_send_percentage = .7
 
@@ -61,17 +61,19 @@ def can_take_largest_enemy_planet(state):
 
 def planet_in_trouble(state):
     weakest_planet = min(state.my_planets(), key=lambda t: t.num_ships, default=None);
-
-    enemy_ship_count = sum(planet.num_ships for planet in state.enemy_planets())
-    enemy_planet_count = len(state.enemy_planets())
-    if enemy_planet_count == 0:
+    if not weakest_planet:
       return False
-    enemy_ship_count_average = enemy_ship_count/enemy_planet_count
+    my_ship_count = sum(planet.num_ships for planet in state.my_planets())
+    my_planet_count = len(state.my_planets())
+    if my_planet_count == 0:
+      return False
+    my_ship_count_average = my_ship_count/my_planet_count
 
-    if(weakest_planet.num_ships<enemy_ship_count_average) and (weakest_planet.num_ships < planet_in_trouble_at):
+    if(weakest_planet.num_ships < planet_in_trouble_at):
       return True;
     else: return False
     
+# sets the stat to 80% of average
 def update_planet_in_trouble(state):
   my_ship_count = sum(planet.num_ships for planet in state.my_planets())
   my_planet_count = len(state.my_planets())
@@ -80,5 +82,5 @@ def update_planet_in_trouble(state):
     return False
   my_ship_average = my_ship_count/my_planet_count
   
-  planet_in_trouble_at = max((my_ship_average - 40), planet_in_trouble_at)
+  planet_in_trouble_at = max((my_ship_average - my_ship_average*0.2), planet_in_trouble_at)
   return True

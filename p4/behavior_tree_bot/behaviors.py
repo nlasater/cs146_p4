@@ -4,7 +4,7 @@ sys.path.insert(0, '../')
 from planet_wars import issue_order
 
 #target_planet
-max_range = 100
+max_range = 8
 
 def attack_weakest_enemy_planet(state):
     # (1) If we currently have a fleet in flight, abort plan.
@@ -36,7 +36,7 @@ def take_strongest_enemy(state):
   else:
     return False
     
-def spread_to_weakest_neutral_planet(state):
+def spread_to_nearest_weakest_neutral_planet(state):
     # (1) If we currently have more than 1 fleet in flight, just do nothing.
     if len(state.my_fleets()) >= 2:
         return False
@@ -50,12 +50,29 @@ def spread_to_weakest_neutral_planet(state):
     if not strongest_planet or not weakest_planet:
         # No legal source or destination
         return False
+      
+    # if weakest planet is too far away, pick weakest in range
+    if state.distance(strongest_planet.ID, weakest_planet.ID) > max_range:
+      distance_planets = []
+      for planet in state.neutral_planets():
+        if state.distance(planet.ID, strongest_planet.ID) < max_range:
+          distance_planets.append([planet.num_ships, planet.ID])
+      
+      # if we didn't find a closer neutral, just do it
+      if not distance_planets:
+        return issue_order(state, strongest_planet.ID, weakest_planet.ID, strongest_planet.num_ships/2)
+      # but if we did, send to the weakest one
+      else:
+        distance_planets.sort()
+        x = len(distance_planets)
+        issue_order(state, strongest_planet.ID,  distance_planets[x-1][1], strongest_planet.num_ships/2)
+        
     else:
         # (4) Send half the ships from my strongest planet to the weakest enemy planet.
         return issue_order(state, strongest_planet.ID, weakest_planet.ID, strongest_planet.num_ships / 2)
 
 def defend_Weakest_Planet(state):
-   # (1) If we currently have a fleet in flight, just do nothing.
+   # (1) If we currently have fleets in flight, just do nothing.
     if len(state.my_fleets()) >= 1:
         return False
     my_ship_count = sum(planet.num_ships for planet in state.my_planets())
