@@ -41,7 +41,6 @@ def setup_behavior_tree():
     #defensive strategy.
     defensive_plan=Sequence(name="Defensive Strategy")
     planet_in_trouble_check=Check(planet_in_trouble);
-    
     defend=Action(defend_Weakest_Planet);
     update_min = Check(update_planet_in_trouble)
     defensive_plan.child_nodes=[planet_in_trouble_check, defend, update_min];
@@ -53,7 +52,7 @@ def setup_behavior_tree():
     spread_update = Action(update_extra_forces)
     spread_sequence.child_nodes = [neutral_planet_check, spread_action, spread_update]
 
-    root.child_nodes = [spread_sequence, offensive_plan, spread_action.copy()]
+    root.child_nodes = [spread_sequence, offensive_plan, defensive_plan, spread_action.copy()]
 
     
     logging.info('\n' + root.tree_to_string())

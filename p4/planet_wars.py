@@ -11,7 +11,7 @@ def issue_order(state, source_planet_ID, destination_planet_ID, fleet_num_ships)
     # Check for legal order
     planet = state.planets[source_planet_ID]
     if planet.num_ships < fleet_num_ships or planet.owner != 1:
-        logging.debug("Bad order:" + ' '.join([str(source_planet_ID), str(planet.num_ships), str(fleet_num_ships)]))
+        logging.debug("Bad order:" + ' '.join([str(source_planet_ID), str(destination_planet_ID), str(fleet_num_ships)]))
         return False
 
     # Update state

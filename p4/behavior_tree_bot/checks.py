@@ -2,7 +2,7 @@
 blitz_min_planets = 3
 agressive_fleet_min = 100
 planet_in_trouble_at = 50
-max_allowable_send_percentage = .7
+max_send = .7
 being_attacked = None
 
 
@@ -61,13 +61,13 @@ def can_take_largest_enemy_planet(state):
     for planet in state.my_planets():
        if(planet.num_ships!=my_largest_planet_count and planet.num_ships>second_strongest): second_strongest=planet.num_ships;
 
-    if my_largest_planet_count*max_allowable_send_percentage > largest_enemy_planet_count:
+    if my_largest_planet_count*max_send > largest_enemy_planet_count:
       return True
 
     else:
       # take this and the next strongest planet
       my_largest_planet_count = my_largest_planet_count + second_strongest;
-      if my_largest_planet_count*max_allowable_send_percentage > largest_enemy_planet_count:
+      if my_largest_planet_count*max_send > largest_enemy_planet_count:
         return True
       else:
         return False
@@ -78,7 +78,7 @@ def can_take_weakest_planet(state):
     if not weakest_enemy or not strongest_planet:
       return False
     
-    if strongest_planet.num_ships*max_allowable_send_percentage > weakest_enemy.num_ships:
+    if strongest_planet.num_ships*max_send > weakest_enemy.num_ships:
       return True
     else:
       return False
