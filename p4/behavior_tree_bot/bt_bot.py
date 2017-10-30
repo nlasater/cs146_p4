@@ -44,25 +44,29 @@ def setup_behavior_tree():
     
     #offensive strategy
     offensive_plan = Sequence(name='Offensive Strategy')
-    largest_fleet_check = Check(have_largest_fleet)
+    largest_fleet_check = Check(fleet_is_strong)
+    largest_fleet_update = Check(update_agressive_fleet_min)
+    can_take_check = Check(can_take_weakest_planet)
     attack = Action(attack_weakest_enemy_planet)
-    offensive_plan.child_nodes = [largest_fleet_check, attack]
+    offensive_plan.child_nodes = [largest_fleet_check, largest_fleet_update, can_take_check, attack]
 
 
     #defensive strategy.
     defensive_plan=Sequence(name="Defensive Strategy")
     planet_in_trouble_check=Check(planet_in_trouble);
+    
     defend=Action(defend_Weakest_Planet);
     update_min = Check(update_planet_in_trouble)
-    defensive_plan.child_nodes=[planet_in_trouble_check,defend];
+    defensive_plan.child_nodes=[planet_in_trouble_check, defend, update_min];
 
-
+    
     spread_sequence = Sequence(name='Spread Strategy')
     neutral_planet_check = Check(if_neutral_planet_available)
     spread_action = Action(spread_to_nearest_weakest_neutral_planet)
-    spread_sequence.child_nodes = [neutral_planet_check, spread_action]
+    spread_update = Action(update_extra_forces)
+    spread_sequence.child_nodes = [neutral_planet_check, spread_action, spread_update]
 
-    root.child_nodes = [offensive_plan, spread_sequence, attack.copy()]
+    root.child_nodes = [offensive_plan, defensive_plan, spread_sequence, attack.copy()]
 
     
     logging.info('\n' + root.tree_to_string())

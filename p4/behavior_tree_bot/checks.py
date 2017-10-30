@@ -3,6 +3,7 @@ blitz_min_planets = 3
 agressive_fleet_min = 100
 planet_in_trouble_at = 50
 max_allowable_send_percentage = .7
+being_attacked = None
 
 
 def if_neutral_planet_available(state):
@@ -30,13 +31,25 @@ def enemy_owns_few_planets(state):
   # note this only checks standby fleets, not active ones
 def fleet_is_strong(state):
     my_ship_count = sum(planet.num_ships for planet in state.my_planets())
-    my_planet_count = sum(planet for planet in state.my_planets())
+    my_planet_count = len(state.my_planets())
+    if my_planet_count == 0:
+      return False
     my_ship_count_average = my_ship_count/my_planet_count
 
     if my_ship_count_average > agressive_fleet_min:
       return True
     else:
       return False
+    
+def update_agressive_fleet_min(state):
+    my_ship_count = sum(planet.num_ships for planet in state.my_planets())
+    my_planet_count = len(state.my_planets())
+    if my_planet_count == 0:
+      return False
+    my_ship_count_average = my_ship_count/my_planet_count
+    
+    agressive_fleet_min = my_ship_count_average + 20
+    return True
     
   # returns true if we can take largest enemy planet with our one/two strongest planets
 def can_take_largest_enemy_planet(state):
@@ -58,7 +71,18 @@ def can_take_largest_enemy_planet(state):
         return True
       else:
         return False
-
+def can_take_weakest_planet(state):
+    weakest_enemy = min(state.enemy_planets(), key=lambda t: t.num_ships, default=None);
+    strongest_planet = max(state.my_planets(), key=lambda t: t.num_ships, default=None);
+    
+    if not weakest_enemy or not strongest_planet:
+      return False
+    
+    if strongest_planet.num_ships*max_allowable_send_percentage > weakest_enemy.num_ships:
+      return True
+    else:
+      return False
+    
 def planet_in_trouble(state):
     weakest_planet = min(state.my_planets(), key=lambda t: t.num_ships, default=None);
     if not weakest_planet:
@@ -82,5 +106,16 @@ def update_planet_in_trouble(state):
     return False
   my_ship_average = my_ship_count/my_planet_count
   
-  planet_in_trouble_at = max((my_ship_average - my_ship_average*0.2), planet_in_trouble_at)
+  planet_in_trouble_at = (my_ship_average - my_ship_average*0.2)
   return True
+
+# returns true if planet under attack, and sets being_attacked to [planet, attacking force]
+def planet_under_attack(state):
+  for fleet in state.enemy_fleets():
+    if(fleet.destination_planet in state.my_planets().ID):
+      being_attacked = fleet.destination_planet
+      return True
+    else:
+      return False
+    
+    
