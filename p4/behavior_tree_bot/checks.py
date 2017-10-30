@@ -58,3 +58,13 @@ def can_take_largest_enemy_planet(state):
       else:
         return False
 
+def planet_in_trouble(state):
+    weakest_planet = min(state.my_planets(), key=lambda t: t.num_ships, default=None);
+
+    my_ship_count = sum(planet.num_ships for planet in state.my_planets())
+    my_planet_count = sum(planet for planet in state.my_planets())
+    my_ship_count_average = my_ship_count/my_planet_count
+
+    if(weakest_planet.num_ships<my_ship_count_average):
+      return True;
+    else: return False;
