@@ -41,20 +41,17 @@ def fleet_is_strong(state):
 def can_take_largest_enemy_planet(state):
     largest_enemy_planet_count = max(planet.num_ships for planet in state.enemy_planets())
     my_largest_planet_count = max(planet.num_ships for planet in state.my_planets())
-    second_strongest=-999;
-
-    #Get second strongest planet.
-    for planet in state.my_planets():
-       if(planet.num_ships!=my_largest_planet_count and planet.num_ships>second_strongest): second_strongest=planet.num_ships;
-
+    
     if my_largest_planet_count*max_allowable_send_percentage > largest_enemy_planet_count:
       return True
 
     else:
       # take this and the next strongest planet
-      my_largest_planet_count = my_largest_planet_count + second_strongest;
+      next_strongest = min(largest_enemy_planet_count, max(planet.num_ships for planet in state.enemy_planets()))
+      my_largest_planet_count = my_largest_planet_count + next_strongest
+
       if my_largest_planet_count*max_allowable_send_percentage > largest_enemy_planet_count:
+        
         return True
       else:
         return False
-

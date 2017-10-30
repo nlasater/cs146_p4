@@ -2,7 +2,6 @@ import sys
 sys.path.insert(0, '../')
 from planet_wars import issue_order
 
-#Starget_planet
 max_range = 1000
 
 def attack_weakest_enemy_planet(state):

@@ -1,0 +1,56 @@
+INFO:root:
+Selector: High Level Ordering of Strategies
+| Selector: Initial Strategy Selector
+| | Sequence: Blitz Strategy
+| | | Sequence: Take Enemys largest planet (usually home)
+| | | | Selector: Can Fleet Take Planet
+| | | | | Check: fleet_is_strong
+| | | | | Check: can_take_largest_enemy_planet
+| | | | Action: take_strongest_enemy
+| Sequence: Offensive Strategy
+| | Check: have_largest_fleet
+| | Action: attack_weakest_enemy_planet
+| Sequence: Spread Strategy
+| | Check: if_neutral_planet_available
+| | Action: spread_to_weakest_neutral_planet
+| Action: attack_weakest_enemy_planet
+
+DEBUG:root:Executing:Selector: High Level Ordering of Strategies
+DEBUG:root:Executing:Selector: Initial Strategy Selector
+DEBUG:root:Executing:Sequence: Blitz Strategy
+DEBUG:root:Executing:Sequence: Take Enemys largest planet (usually home)
+DEBUG:root:Executing:Selector: Can Fleet Take Planet
+DEBUG:root:Executing:Check: fleet_is_strong
+ERROR:root:Error in bot.
+Traceback (most recent call last):
+  File "behavior_tree_bot/bt_bot.py", line 76, in <module>
+    do_turn(planet_wars)
+  File "behavior_tree_bot/bt_bot.py", line 64, in do_turn
+    behavior_tree.execute(planet_wars)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 8, in logged_fn
+    result = fn(self, state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 52, in execute
+    success = child_node.execute(state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 8, in logged_fn
+    result = fn(self, state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 52, in execute
+    success = child_node.execute(state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 8, in logged_fn
+    result = fn(self, state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 63, in execute
+    continue_execution = child_node.execute(state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 8, in logged_fn
+    result = fn(self, state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 63, in execute
+    continue_execution = child_node.execute(state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 8, in logged_fn
+    result = fn(self, state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 52, in execute
+    success = child_node.execute(state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 8, in logged_fn
+    result = fn(self, state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\bt_nodes.py", line 77, in execute
+    return self.check_function(state)
+  File "C:\Users\Nichole\documents\programming files\cm146\p4\behavior_tree_bot\checks.py", line 32, in fleet_is_strong
+    my_planet_count = sum(planet for planet in state.my_planets())
+TypeError: unsupported operand type(s) for +: 'int' and 'Planet'
