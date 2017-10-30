@@ -55,7 +55,7 @@ def spread_to_weakest_neutral_planet(state):
 
 def defend_Weakest_Planet(state):
     my_ship_count = sum(planet.num_ships for planet in state.my_planets())
-    my_planet_count = sum(planet for planet in state.my_planets())
+    my_planet_count = len(state.my_planets())
     my_ship_count_average = my_ship_count/my_planet_count
     # (2) Find my strongest planet.
     strongest_planet = max(state.my_planets(), key=lambda t: t.num_ships, default=None)
