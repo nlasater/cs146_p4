@@ -2,9 +2,10 @@ import sys
 import operator
 sys.path.insert(0, '../')
 from planet_wars import issue_order
+from checks import max_allowable_send_percentage
 
 #target_planet
-max_range = 8
+max_range = 9
 extra_forces = 80
 
 def attack_weakest_enemy_planet(state):
@@ -22,8 +23,12 @@ def attack_weakest_enemy_planet(state):
         # No legal source or destination
         return False
     else:
-        # (4) Send half the ships from my strongest planet to the weakest enemy planet.
-        return issue_order(state, strongest_planet.ID, weakest_planet.ID, strongest_planet.num_ships / 2)
+        # (4) send req'd ships from my strongest planet to the weakest enemy planet.
+        req_ships = weakest_planet.num_ships + extra_forces
+        if req_ships > strongest_planet.num_ships*max_allowable_send_percentage and len(state.my_planets()) > 1:
+          return False
+          
+        return issue_order(state, strongest_planet.ID, weakest_planet.ID, strongest_planet.num_ships*max_allowable_send_percentage)
 
 #take strongest enemy planet, using 3 strongest planets in range or strongest planet if in range
 def take_strongest_enemy(state):
@@ -39,7 +44,7 @@ def take_strongest_enemy(state):
     
 def spread_to_nearest_weakest_neutral_planet(state):
     # (1) If we currently have more than 1 fleet in flight, just do nothing.
-    if len(state.my_fleets()) >= 1:
+    if len(state.my_fleets()) >= 2:
         return False
 
     # (2) Find my strongest planet.
@@ -50,9 +55,8 @@ def spread_to_nearest_weakest_neutral_planet(state):
 
     if not strongest_planet or not weakest_planet:
         # No legal source or destination
-        return True
-    # determine how many ships we need
-    fleet_size = weakest_planet.num_ships + extra_forces
+        return False
+     
     
     # if weakest planet is too far away, pick weakest in range
     if state.distance(strongest_planet.ID, weakest_planet.ID) > max_range:
@@ -63,16 +67,16 @@ def spread_to_nearest_weakest_neutral_planet(state):
       
       # if we didn't find a closer neutral, just do it
       if not distance_planets:
-        return issue_order(state, strongest_planet.ID, weakest_planet.ID, fleet_size)
+        return issue_order(state, strongest_planet.ID, weakest_planet.ID, weakest_planet.num_ships + extra_forces)
       # but if we did, send to the weakest one
       else:
         distance_planets.sort()
         x = len(distance_planets)
-        return issue_order(state, strongest_planet.ID,  distance_planets[x-1][1], fleet_size)
+        return issue_order(state, strongest_planet.ID,  distance_planets[x-1][1], distance_planets[x-1][0] + extra_forces)
         
     else:
         # (4) Send half the ships from my strongest planet to the weakest enemy planet.
-        return issue_order(state, strongest_planet.ID, weakest_planet.ID, fleet_size)
+        return issue_order(state, strongest_planet.ID, weakest_planet.ID, weakest_planet.num_ships + extra_forces)
 
 def update_extra_forces(state):
   my_ship_count = sum(planet.num_ships for planet in state.my_planets())
