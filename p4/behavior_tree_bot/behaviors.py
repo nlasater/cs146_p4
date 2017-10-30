@@ -1,9 +1,10 @@
 import sys
+import operator
 sys.path.insert(0, '../')
 from planet_wars import issue_order
 
 #target_planet
-max_range = 1000
+max_range = 100
 
 def attack_weakest_enemy_planet(state):
     # (1) If we currently have a fleet in flight, abort plan.
@@ -29,15 +30,15 @@ def take_strongest_enemy(state):
   strongest_enemy = max(state.enemy_planets(), key=lambda t: t.num_ships, default=None)
   strongest_planet = max(state.my_planets(), key=lambda t: t.num_ships, default=None)
     
-  distance = state.distance(strongest_planet, strongest_enemy)
+  distance = state.distance(strongest_planet.ID, strongest_enemy.ID)
   if distance <= max_range:
     return issue_order(state, strongest_planet.ID, strongest_enemy.ID, strongest_planet.num_ships*max_allowable_send_percentage)
   else:
     return False
     
 def spread_to_weakest_neutral_planet(state):
-    # (1) If we currently have a fleet in flight, just do nothing.
-    if len(state.my_fleets()) >= 1:
+    # (1) If we currently have more than 1 fleet in flight, just do nothing.
+    if len(state.my_fleets()) >= 2:
         return False
 
     # (2) Find my strongest planet.
@@ -54,17 +55,46 @@ def spread_to_weakest_neutral_planet(state):
         return issue_order(state, strongest_planet.ID, weakest_planet.ID, strongest_planet.num_ships / 2)
 
 def defend_Weakest_Planet(state):
+   # (1) If we currently have a fleet in flight, just do nothing.
+    if len(state.my_fleets()) >= 1:
+        return False
     my_ship_count = sum(planet.num_ships for planet in state.my_planets())
     my_planet_count = len(state.my_planets())
     my_ship_count_average = my_ship_count/my_planet_count
     # (2) Find my strongest planet.
     strongest_planet = max(state.my_planets(), key=lambda t: t.num_ships, default=None)
+    
     # (3) Find the weakest planet.
     weakest_planet = min(state.my_planets(), key=lambda t: t.num_ships, default=None)
-
+    
     if not strongest_planet or not weakest_planet:
         # No legal source or destination
+        logging.info("No str or weakest")
         return False
+    if strongest_planet.ID == weakest_planet.ID:
+      return False
+    
+    # if strongest planet is too far away, pick strongest 3 in range
+    if state.distance(strongest_planet.ID, weakest_planet.ID) > max_range:
+      distance_planets = []
+      for planet in state.my_planets():
+        if state.distance(planet.ID, weakest_planet.ID) < max_range:
+          distance_planets.append([planet.num_ships, planet.ID])
+        
+      if not distance_planets:
+        return issue_order(state, strongest_planet.ID, weakest_planet.ID, strongest_planet.num_ships/2)
+      else:
+        if len(distance_planets) < 3:
+          for planet in distance_planets:
+            issue_order(state, planet[1], weakest_planet.ID, planet[0]/2)
+        else:
+          distance_planets.sort()
+          for x in range(0,3):
+            
+            issue_order(state, distance_planets[x][1], weakest_planet.ID, distance_planets[x][0]/2)
+    
+    
     else:
         #Send half my ships from my strongest planet to my weakest planet.
+        
         return issue_order(state, strongest_planet.ID, weakest_planet.ID, (strongest_planet.num_ships +weakest_planet.num_ships)/2);

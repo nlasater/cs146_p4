@@ -52,6 +52,7 @@ def setup_behavior_tree():
     defensive_plan=Sequence(name="Defensive Strategy")
     planet_in_trouble_check=Check(planet_in_trouble);
     defend=Action(defend_Weakest_Planet);
+    update_min = Check(update_planet_in_trouble)
     defensive_plan.child_nodes=[planet_in_trouble_check,defend];
 
 
