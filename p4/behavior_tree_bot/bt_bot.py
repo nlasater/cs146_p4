@@ -25,7 +25,7 @@ def setup_behavior_tree():
     # Top-down construction of behavior tree
     root = Selector(name='High Level Ordering of Strategies')
     
-    
+    """
     initial_strategy = Selector(name='Initial Strategy Selector')
     
     blitz_plan = Sequence(name='Blitz Strategy')
@@ -42,18 +42,32 @@ def setup_behavior_tree():
     take_target_seq.child_nodes = [can_we_take_target_selector, take_enemy_planet]
     
     initial_strategy.child_nodes = [blitz_plan, offensive_plan]
+    """
+    
     
     offensive_plan = Sequence(name='Offensive Strategy')
     largest_fleet_check = Check(have_largest_fleet)
     attack = Action(attack_weakest_enemy_planet)
     offensive_plan.child_nodes = [largest_fleet_check, attack]
-
+    
+    """
     spread_sequence = Sequence(name='Spread Strategy')
     neutral_planet_check = Check(if_neutral_planet_available)
     spread_action = Action(spread_to_weakest_neutral_planet)
     spread_sequence.child_nodes = [neutral_planet_check, spread_action]
-
-    root.child_nodes = [initial_strategy, spread_sequence, attack.copy()]
+    """
+    
+    
+    spread_sequence = Sequence(name="Spread Strategy")
+    neutral_planet_check = Check(if_neutral_planet_available)
+    plentiful_fleet_check = Check(fleet_is_plentiful)
+    perform_spread = Selector(name="Perform Spread")
+    spread_action1 = Action(spread_to_nearest_neutral_planet)
+    spread_action2 = Action(spread_to_weakest_neutral_planet)
+    perform_spread.child_nodes = [spread_action2]
+    spread_sequence.child_nodes = [neutral_planet_check, plentiful_planet_check, perform_spread]
+    
+    root.child_nodes = [spread_sequence, offensive_plan, attack.copy()]
     
     logging.info('\n' + root.tree_to_string())
     return root

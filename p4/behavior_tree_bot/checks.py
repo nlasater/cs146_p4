@@ -1,6 +1,7 @@
 #set all variables to be checked against
 blitz_min_planets = 3
-agressive_fleet_min = 40
+agressive_fleet_min = 80
+plentiful_fleet_min = 60
 max_allowable_send_percentage = .7
 
 
@@ -37,6 +38,18 @@ def fleet_is_strong(state):
     else:
       return False
     
+# returns true if our fleet average is over the plentiful_fleet_min
+# note this only checks standby fleets, not active ones
+def fleet_is_plentiful(state):
+    my_ship_count = sum(planet.num_ships for planet in state.my_planets())
+    my_planet_count = sum(planet for planet in state.my_planets())
+    my_ship_count_average = my_ship_count/my_planet_count
+
+    if my_ship_count_average > plentiful_fleet_min:
+      return True
+    else:
+      return False
+  
   # returns true if we can take largest enemy planet with our one/two strongest planets
 def can_take_largest_enemy_planet(state):
     largest_enemy_planet_count = max(planet.num_ships for planet in state.enemy_planets())
