@@ -27,10 +27,10 @@ def setup_behavior_tree():
     
     initial_strategy = Selector(name='Initial Strategy Selector')
     
-    blitz_plan = Sequence(name='Blitz Strategy')
+    #blitz_plan = Sequence(name='Blitz Strategy')
     #colonize_plan = Sequence(name='Colonize Strategy')
     
-    initial_strategy.child_nodes = [blitz_plan]
+    #initial_strategy.child_nodes = [colonize_plan]
     
     enemy_owns_few_check = Check(enemy_owns_few_planets)
     
@@ -47,6 +47,7 @@ def setup_behavior_tree():
     attack = Action(attack_weakest_enemy_planet)
     offensive_plan.child_nodes = [largest_fleet_check, attack]
 
+
     #defensive strategy.
     defensive_plan=Sequence(name="Defensive Strategy")
     planet_in_trouble_check=Check(planet_in_trouble);
@@ -60,6 +61,7 @@ def setup_behavior_tree():
     spread_sequence.child_nodes = [neutral_planet_check, spread_action]
 
     root.child_nodes = [initial_strategy, offensive_plan, spread_sequence, attack.copy()]
+
     
     logging.info('\n' + root.tree_to_string())
     return root
