@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, '../')
 from planet_wars import issue_order
 
-target_planet
+#Starget_planet
 max_range = 1000
 
 def attack_weakest_enemy_planet(state):
@@ -25,7 +25,7 @@ def attack_weakest_enemy_planet(state):
 
 #take strongest enemy planet, using 3 strongest planets in range or strongest planet if in range
 def take_strongest_enemy(state):
-  print("doing blitz")
+  
     strongest_enemy = max(state.enemy_planets(), key=lambda t: t.num_ships, default=None)
     strongest_planet = max(state.my_planets(), key=lambda t: t.num_ships, default=None)
     
