@@ -1,7 +1,6 @@
 #set all variables to be checked against
 blitz_min_planets = 3
 agressive_fleet_min = 100
-planet_in_trouble_at = 50
 max_send = .7
 being_attacked = None
 
@@ -91,23 +90,13 @@ def planet_in_trouble(state):
     my_planet_count = len(state.my_planets())
     if my_planet_count == 0:
       return False
-    my_ship_count_average = my_ship_count/my_planet_count
-
+    my_ship_average = my_ship_count/my_planet_count
+    
+    planet_in_trouble_at = (my_ship_average*0.1)
     if(weakest_planet.num_ships < planet_in_trouble_at):
       return True;
     else: return False
     
-# sets the stat to 80% of average
-def update_planet_in_trouble(state):
-  my_ship_count = sum(planet.num_ships for planet in state.my_planets())
-  my_planet_count = len(state.my_planets())
-  
-  if my_planet_count == 0:
-    return False
-  my_ship_average = my_ship_count/my_planet_count
-  
-  planet_in_trouble_at = (my_ship_average - my_ship_average*0.2)
-  return True
 
 # returns true if planet under attack, and sets being_attacked to [planet, attacking force]
 def planet_under_attack(state):

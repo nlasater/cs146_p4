@@ -35,27 +35,33 @@ def setup_behavior_tree():
     largest_fleet_update = Check(update_agressive_fleet_min)
     can_take_check = Check(can_take_weakest_planet)
     attack = Action(attack_weakest_enemy_planet)
-    offensive_plan.child_nodes = [largest_fleet_check, largest_fleet_update, can_take_check, attack]
+    attack_update = Action(update_extra_forces)
+    offensive_plan.child_nodes = [largest_fleet_check, largest_fleet_update, can_take_check, attack, attack_update]
 
 
     #defensive strategy.
     defensive_plan=Sequence(name="Defensive Strategy")
     planet_in_trouble_check=Check(planet_in_trouble);
     defend=Action(defend_Weakest_Planet);
-    update_min = Check(update_planet_in_trouble)
-    defensive_plan.child_nodes=[planet_in_trouble_check, defend, update_min];
+    #update_min = Check(update_planet_in_trouble)
+    defensive_plan.child_nodes=[planet_in_trouble_check, defend];
 
     
     spread_sequence = Sequence(name='Spread Strategy')
     neutral_planet_check = Check(if_neutral_planet_available)
     spread_action = Action(spread_to_nearest_weakest_neutral_planet)
-    spread_update = Action(update_extra_forces)
-    spread_sequence.child_nodes = [neutral_planet_check, spread_action, spread_update]
+    #spread_update = Action(update_extra_forces)
+    spread_sequence.child_nodes = [neutral_planet_check, spread_action]
 
-    root.child_nodes = [spread_sequence, offensive_plan, defensive_plan, spread_action.copy()]
+    root.child_nodes = [spread_sequence, offensive_plan, spread_action.copy()]
 
     
     logging.info('\n' + root.tree_to_string())
+    
+    text_file = open("Bt.txt", "w")
+    text_file.write(root.tree_to_string())
+    text_file.close()
+    
     return root
 
 # You don't need to change this function
